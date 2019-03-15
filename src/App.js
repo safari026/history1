@@ -1,28 +1,53 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import axios from 'axios'
+import Button from './Button'
+import DataList from './DataList'
 import './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+  constructor(props){
+    super(props);
+    this.state= {
+      data: [],
+      isLoaded: false
+    }
+    this.loadHandler = this.loadHandler.bind(this);
+    this.delteHandler = this.deleteHandler.bind(this);
+    //  console.log(this.state.data)
+  }сomponentDidMount() {
+    this.loadHandler();
   }
+  loadHandler = () => {
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then((response) => {
+      //console.log(response.data);
+      this.setState({isLoaded: true,
+      data: response.data})
+  })
+}
+deleteHandler = (index) => {
+  console.log('delete handler');
+  console.log(index);
+  const data = Object.assign([], this.state.data);
+  data.splice(index, 1);
+  this.setState({data: data})
+}
+render() {
+  var {isLoaded, data} = this.state;
+  if (!isLoaded) {
+    return (
+      <div>
+        <div>Loading...</div>
+        <Button clickLoadHandler={this.loadHandler}>Load Data</Button>
+      </div>
+    )
+  } else {
+    return (
+      <DataList data={this.state.data} clickLoadHandler={this.deleteHandler} />
+    )
+  }
+
+}
 }
 
 export default App;
